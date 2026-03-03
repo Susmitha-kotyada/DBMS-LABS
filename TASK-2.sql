@@ -1,0 +1,11 @@
+ALTER TABLE Applications ADD application_date DATE;
+UPDATE Applications SET application_date='2025-10-23' WHERE application_id=104;
+SELECT * FROM Applications;
+SELECT * FROM SCHEMESS;
+SELECT * FROM Applications WHERE statuss='approved';
+SELECT NAME FROM Users ORDER BY NAME ASC;
+SELECT Schemename FROM SCHEMESS WHERE Schemename like '%bharat%';
+SELECT count(*) AS total_applications FROM Applications WHERE application_date>'2025-01-01';
+SELECT statuss,COUNT(*) AS APPLICATIONS FROM Applications GROUP BY statuss;
+SELECT Schemeid,COUNT(*) AS application_count FROM SCHEMESS GROUP BY Schemeid ;
+SELECT EMAIL AS gmailusers FROM Users WHERE EMAIL LIKE '%gmail.com';
