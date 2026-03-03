@@ -1,0 +1,138 @@
+<?php
+session_start();
+
+/* ---------------- DATABASE CONNECTION ---------------- */
+$conn = mysqli_connect("localhost", "root", "", "amazon_db");
+if (!$conn) {
+    die("Database Connection Failed");
+}
+
+/* ---------------- ARRAYS ---------------- */
+
+// Indexed + Multidimensional Array (Products)
+$products = [
+    ["id" => 1, "name" => "Laptop", "price" => 50000],
+    ["id" => 2, "name" => "Mobile", "price" => 20000],
+    ["id" => 3, "name" => "Headphones", "price" => 2000]
+];
+
+// Associative Array (User Example)
+$user = [
+    "username" => "guest",
+    "role" => "customer"
+];
+
+/* ---------------- HANDLE LOGIN FORM ($_POST) ---------------- */
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
+    $username = $_POST["username"];
+    $_SESSION["username"] = $username;
+
+    // Set Cookie
+    setcookie("username", $username, time() + 3600);
+}
+
+/* ---------------- ADD TO CART ($_SESSION) ---------------- */
+if (isset($_POST["add_to_cart"])) {
+    $product_id = $_POST["product_id"];
+
+    $_SESSION["cart"][] = [
+        "product_id" => $product_id,
+        "quantity" => 1
+    ];
+}
+
+/* ---------------- FILE UPLOAD ($_FILES) ---------------- */
+if (isset($_POST["upload"])) {
+    if (isset($_FILES["product_image"])) {
+        move_uploaded_file(
+            $_FILES["product_image"]["tmp_name"],
+            "uploads/" . $_FILES["product_image"]["name"]
+        );
+        echo "File Uploaded Successfully<br>";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Amazon Mini Clone</title>
+</head>
+<body>
+
+<h1>Amazon Mini Clone</h1>
+<hr>
+
+<!-- LOGIN FORM -->
+<h2>Login</h2>
+<form method="POST">
+    Username: <input type="text" name="username" required>
+    <button type="submit" name="login">Login</button>
+</form>
+
+<?php
+if (isset($_SESSION["username"])) {
+    echo "Welcome, " . $_SESSION["username"] . "<br>";
+}
+?>
+
+<hr>
+
+<!-- PRODUCT LIST -->
+<h2>Products</h2>
+
+<?php
+foreach ($products as $product) {
+    echo $product["name"] . " - ₹" . $product["price"];
+
+    // Control Statement (if-else)
+    if ($product["price"] > 30000) {
+        echo " (Premium Product)";
+    } else {
+        echo " (Budget Product)";
+    }
+?>
+
+    <form method="POST" style="display:inline;">
+        <input type="hidden" name="product_id" value="<?php echo $product["id"]; ?>">
+        <button type="submit" name="add_to_cart">Add to Cart</button>
+    </form>
+    <br><br>
+
+<?php
+}
+?>
+
+<hr>
+
+<!-- CART DISPLAY -->
+<h2>Your Cart</h2>
+
+<?php
+if (!empty($_SESSION["cart"])) {
+    foreach ($_SESSION["cart"] as $item) {
+        foreach ($products as $product) {
+            if ($product["id"] == $item["product_id"]) {
+                echo $product["name"] . " (Qty: " . $item["quantity"] . ")<br>";
+            }
+        }
+    }
+} else {
+    echo "Cart is Empty";
+}
+?>
+
+<hr>
+
+<!-- FILE UPLOAD -->
+<h2>Upload Product Image</h2>
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="product_image" required>
+    <button type="submit" name="upload">Upload</button>
+</form>
+
+<hr>
+<footer>© 2026 Amazon Mini Clone</footer>
+
+</body>
+</html>
