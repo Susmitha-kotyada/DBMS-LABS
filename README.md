@@ -1,2 +1,4 @@
-# Susmitha
-git command practice
+
+# DBMS-LABS
+Dbms labs practice
+
